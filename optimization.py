@@ -6,14 +6,14 @@ from typing import Generator, Iterable
 
 Optimizer = optimizer.Optimizer # Base class for torch optimizers
 
-
-
-
 class SGLD(Optimizer):
     """Stochastic Gradient Langevin Dynamics (SGLD).
     An algorithm for Bayesian learning from large scale datasets. 
 
     Weight decay is specified in terms of the Gaussian prior's sigma.
+
+    Welling and Teh, 2011. Bayesian Learning via Stochastiv Gradient Langevin 
+    Dynamics. Paper link: https://bit.ly/3ngnyRA
 
     Args:
         params (Iterable): an iterable of `torch.Tensor`s or
