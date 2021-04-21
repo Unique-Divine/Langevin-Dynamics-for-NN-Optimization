@@ -1,6 +1,7 @@
 import torch 
 import numpy as np
 from torch._C import Value
+from torch.autograd import grad
 from torch.optim import optimizer
 from typing import Generator, Iterable
 
@@ -80,14 +81,14 @@ class SGLD(Optimizer):
 
 class PreconditionedSGLD(Optimizer):
     """Preconditioned Stochastic Gradient Langevin Dynamics (pSGLD).
-    An algorithm that combines adaptive preconditioners with SGLD. 
-
-    Weight decay is specified in terms of the Gaussian prior's sigma.
+    An algorithm that combines adaptive preconditioners (RMSprop) with SGLD. 
 
     Li, Chen, Carlson, and Carin, 2016. Preconditioned Stochastic Gradient 
         Langevin Dynamics for Deep Neural Networks. 
         Paper link: https://preview.tinyurl.com/25kd89a6
     Note, this is Algorithm 1 from the paper. 
+
+    Weight decay is specified in terms of the Gaussian prior's sigma.
 
     Args:
         params (Iterable): an iterable of `torch.Tensor`s or
@@ -98,7 +99,8 @@ class PreconditionedSGLD(Optimizer):
         sigma_gauss_prior (float, optional): Defaults to 0.
         weight_balance (float, optional): Hyperparameter α (alpha) in the paper.
             Defaults to 0.99.
-        step_size (float, optional): Hyperparameter ε_t in the paper. Defaults to 1e-5.
+        step_size (float, optional): Hyperparameter ε_t in the paper. 
+            Defaults to 1e-5.
         centered (bool, optional): Defautlts to False.
         add_noise (bool, optional): Defaults to True. 
     
@@ -151,13 +153,40 @@ class PreconditionedSGLD(Optimizer):
             if param.grad is None:
                 continue
             gradient = param.grad.data
+            state = self.state[param]
+            state_is_empty: bool = len(state) == 0 
+            if state_is_empty:
+                state['step'] = 0
+                state['sq_avg'] = torch.zeros_like(param.data)
+                if param_group['centered']:
+                    state['grad_avg'] = torch.zeros_like(param.data)
+
+            sq_avg = state['sq_avg']
+            weight_balance = param_group['weight_balance']
+            state['step'] += 1
+
             if weight_decay != 0:
                 gradient.add_(weight_decay, param.data)
+
+            sq_avg.mul_(weight_balance).addcmul_(
+                1 - weight_balance, gradient, gradient)
+            
+            if param_group['centered']:
+                gradient_avg = state['gradient_avg']
+                gradient_avg.mul_(weight_balance).add_(
+                    1 - weight_balance, gradient)
+                avg = sq_avg.cmul(-1, gradient_avg, gradient_avg).sqrt().add_(
+                    param_group['step_size'])
+            else:
+                avg = sq_avg.sqrt().add_(param_group['step_size'])
+
             if param_group['addnoise']:
                 langevin_noise = param.data.new(param.data.size()).normal_(
                     mean=0, std=1) / np.sqrt(param_group['lr'])
-                param.data.add_(-param_group['lr'], 
-                                0.5*gradient + langevin_noise)
+                param.data.add_(
+                    -param_group['lr'], 
+                    0.5*gradient.div_(avg) + (langevin_noise / torch.sqrt(avg)))
             else: # don't add noise
-                param.data.add_(-param_group['lr'], 0.5*gradient)
+                param.data.add_(-param_group['lr'], 0.5*gradient, avg)
+
         return loss
