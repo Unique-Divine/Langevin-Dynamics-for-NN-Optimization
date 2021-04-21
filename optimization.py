@@ -36,7 +36,7 @@ class SGLD(Optimizer):
     """ 
 
     def __init__(self, params: Iterable, lr: float, 
-                 sigma_gauss_prior: float = 0, add_noise: bool =  True):
+                 sigma_gauss_prior: float = 0.1, add_noise: bool =  True):
         if isinstance(sigma_gauss_prior, (complex)):
             if sigma_gauss_prior.imag != 0:
                 raise ValueError(f"sigma_gauss_prior must be a real number.")
@@ -56,7 +56,7 @@ class SGLD(Optimizer):
             i.e. `parameter.grad`. 
         """
         loss = None
-        def params(self) -> Generator:
+        def params() -> Generator:
             for param_group in self.param_groups:
                 weight_decay = param_group['weight_decay']
                 for param in param_group['params']:
@@ -115,14 +115,16 @@ class PreconditionedSGLD(Optimizer):
     """ 
 
     def __init__(self, params: Iterable, lr: float,
-                 sigma_gauss_prior: float = 0, weight_balance: float = 0.99, 
+                 sigma_gauss_prior: float = 0.1, weight_balance: float = 0.99, 
                  step_size: float = 1e-6, add_noise: bool =  True):
         if isinstance(sigma_gauss_prior, (complex)):
             if sigma_gauss_prior.imag != 0:
                 raise ValueError(f"sigma_gauss_prior must be a real number.")
 
         weight_decay = 1 / (sigma_gauss_prior * sigma_gauss_prior)
-        defaults = dict(lr=lr, weight_decay=weight_decay, add_noise=add_noise)
+        defaults = dict(
+            lr=lr, weight_decay=weight_decay, step_size=step_size, 
+            add_noise=add_noise)
         super(PreconditionedSGLD, self).__init__(params, defaults)
 
     def __setstate__(self, statue: dict) -> None:
