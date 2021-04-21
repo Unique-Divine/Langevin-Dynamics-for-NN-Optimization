@@ -1,7 +1,6 @@
 import torch 
 import numpy as np
 from torch._C import Value
-from torch.autograd import grad
 from torch.optim import optimizer
 from typing import Generator, Iterable
 
