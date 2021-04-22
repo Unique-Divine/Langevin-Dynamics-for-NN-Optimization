@@ -1,3 +1,7 @@
+
+data*
+lightning_logs*
+
 # Jupyter stuff and pycache
 **checkpoint.ipyn**
 **checkpoint**
