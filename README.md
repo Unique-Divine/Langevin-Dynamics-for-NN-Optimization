@@ -10,7 +10,7 @@ This is my final project for the Applied Stochastic Analysis (APMA 4990) course 
 - [Project Report]() TODO add
 - Code: 
   - To run it: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Unique-Divine/SA-Project/blob/main/science.ipynb) 
-  - To view it: []()
+  - To view it: [Open in nbviewer](https://nbviewer.jupyter.org/github/Unique-Divine/SA-Project/blob/main/science.ipynb)
 
 ## Usage Instructions: TODO
 
