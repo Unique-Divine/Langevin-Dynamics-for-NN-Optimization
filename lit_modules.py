@@ -25,6 +25,11 @@ class LitFFNN(pl.LightningModule):
         self.example_input = example_input
         self.num_classes = num_classes
 
+        accuracy = pl.metrics.Accuracy()
+        self.train_accuracy = accuracy.clone()
+        self.val_accuracy = accuracy.clone()
+
+
         if mode in ['classifier', 'c']:
             assert num_classes is not None
             assert isinstance(num_classes, int)
@@ -126,8 +131,12 @@ class LitFFNN(pl.LightningModule):
             loss = self.loss_function(logits, y)
         elif self.mode == 'regressor':
             raise NotImplementedError
-        self.log('train_loss', loss, on_step=True, on_epoch=True,
+        
+        self.train_accuracy(logits, y)
+        self.log('train_loss_step', loss, on_step=True, on_epoch=False,
                  prog_bar=False)
+        self.log('train_acc_step', self.train_accuracy, on_step=True, 
+                 on_epoch=False)
         return loss
     
     def validation_step(self, batch, batch_idx):
@@ -137,7 +146,12 @@ class LitFFNN(pl.LightningModule):
             loss = self.loss_function(logits, y)
         elif self.mode == 'regressor':
             raise NotImplementedError
-        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
+        
+        self.val_accuracy(logits, y)
+        self.log('val_loss_step', loss, on_step=True, on_epoch=False, 
+                 prog_bar=True)
+        self.log('val_acc_step', self.val_accuracy, on_step=True, 
+                 on_epoch=False)
         return loss
     
     def test_step(self, batch, batch_idx):
