@@ -7,7 +7,7 @@
 
 This is my final project for the Applied Stochastic Analysis (APMA 4990) course at  Columbia University.
 
-- [Project Report]() TODO: add link
+- [Project Report (PDF)](https://github.com/Unique-Divine/SA-Project/blob/main/report-Stochastic-Analysis-Project.pdf)
 - Code: 
   - To run: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Unique-Divine/SA-Project/blob/main/science.ipynb) 
   - To view: [Jupyter notebook](https://github.com/Unique-Divine/SA-Project/blob/main/science.ipynb). Note, it's messy. I didn't prepare it for other people just yet. I've only collected results for my report. 
