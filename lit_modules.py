@@ -126,7 +126,8 @@ class LitFFNN(pl.LightningModule):
             loss = self.loss_function(logits, y)
         elif self.mode == 'regressor':
             raise NotImplementedError
-        self.log('train_loss', loss)
+        self.log('train_loss', loss, on_step=True, on_epoch=True,
+                 prog_bar=False)
         return loss
     
     def validation_step(self, batch, batch_idx):
@@ -136,7 +137,7 @@ class LitFFNN(pl.LightningModule):
             loss = self.loss_function(logits, y)
         elif self.mode == 'regressor':
             raise NotImplementedError
-        self.log('val_loss', loss, prog_bar=True)
+        self.log('val_loss', loss, on_step=True, on_epoch=True, prog_bar=True)
         return loss
     
     def test_step(self, batch, batch_idx):
