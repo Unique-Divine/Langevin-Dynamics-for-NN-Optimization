@@ -8,7 +8,9 @@
 This is my final project for the Applied Stochastic Analysis (APMA 4990) course at  Columbia University.
 
 - [Project Report]() TODO add
-- View [main notebook]() TODO add
+- Code: 
+  - To run it: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Unique-Divine/SA-Project/blob/main/science.ipynb) 
+  - To view it: []()
 
 ## Usage Instructions: TODO
 
