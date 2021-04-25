@@ -1,6 +1,6 @@
 # Langevin Dynamics-Based Neural Network Optimization on Real-World Data - Unique Divine
 
-[![Python 3.7+]](https://www.python.org/downloads/release/python-2716/) [![License: MIT]](https://github.com/Unique-Divine/SA-Project/blob/main/LICENSE)
+[![Python 3.7+]] [![License: MIT]](https://github.com/Unique-Divine/SA-Project/blob/main/LICENSE)
 
 [Python 3.7+]: https://img.shields.io/badge/python-3.7+-blue.svg
 [License: MIT]: https://img.shields.io/badge/License-MIT-yellow.svg 
