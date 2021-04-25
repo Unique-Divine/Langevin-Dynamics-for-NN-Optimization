@@ -7,14 +7,14 @@
 
 This is my final project for the Applied Stochastic Analysis (APMA 4990) course at  Columbia University.
 
-- [Project Report]() TODO add
+- [Project Report]() TODO: add link
 - Code: 
-  - To run it: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Unique-Divine/SA-Project/blob/main/science.ipynb) 
-  - To view it: [Open in nbviewer](https://github.com/Unique-Divine/SA-Project/blob/main/science.ipynb)
+  - To run: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Unique-Divine/SA-Project/blob/main/science.ipynb) 
+  - To view: [Jupyter notebook](https://github.com/Unique-Divine/SA-Project/blob/main/science.ipynb). Note, it's messy. I didn't prepare it for other people just yet. I've only collected results for my report. 
 
 ## Usage Instructions: 
 Inside [optimization.py](https://github.com/Unique-Divine/SA-Project/blob/main/optimization.py), there are implementations from scratch for both the stochastic gradient Langevin dynamics (SGLD) optimzer and the preconditioned SGLD  optimizer.  
 - Li, Chen, Carlson, and Carin, 2016. Preconditioned Stochastic Gradient Langevin Dynamics for Deep Neural Networks. [[Paper link]](https://preview.tinyurl.com/25kd89a6)
 - Welling and Teh, 2011. Bayesian Learning via Stochastiv Gradient Langevin Dynamics. [[Paper link]](https://bit.ly/3ngnyRA)
 
-This repository works as a package. The results from the research report are collected using the model I implemented in 
+This repository works as a package. The results from the research report are collected using the model I implemented in [lit_modules.py](https://github.com/Unique-Divine/SA-Project/blob/main/lit_modules.py). 
