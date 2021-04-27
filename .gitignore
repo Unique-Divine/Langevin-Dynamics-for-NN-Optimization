@@ -1,6 +1,8 @@
 
+jupyter_scratch.py
 data*
 lightning_logs*
+local*
 
 # Jupyter stuff and pycache
 **checkpoint.ipyn**
