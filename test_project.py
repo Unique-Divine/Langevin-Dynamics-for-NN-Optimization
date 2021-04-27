@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 import data_modules
 import lit_modules
 import optimization
+import models
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -50,6 +51,27 @@ class TestMNISTOptimizers:
                         
     def test_pSGLD(self):
         self.test_quick_pass(optimizing_fn=self.optimizing_fns()['pSGLD'])
+
+class TestModels:
+    lr = 1e-3
+
+    def test_quick_pass(self):
+        data_module = data_modules.MNISTDataModule()
+        mnist_img_dims = (1, 28, 28)
+        channels, width, height = mnist_img_dims  
+
+        network = models.FFNNClassifier(
+            input_dim = channels * width * height,
+            num_classes = 10,
+            num_hidden_layers = 1,)
+        lit_module = models.LitClassifier(
+            model = network, 
+            loss_fn = nn.CrossEntropyLoss(), 
+            lr = self.lr)
+
+        trainer = pl.Trainer(gpus=0, fast_dev_run=True)
+        trainer.fit(lit_module, datamodule=data_module)
+
 
 """
 Hide pytest warnings: https://stackoverflow.com/a/50821160/13305627
