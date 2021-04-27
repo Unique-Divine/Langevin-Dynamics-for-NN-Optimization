@@ -13,7 +13,8 @@ from torch import Tensor
 
 class LitFFNN(pl.LightningModule):
     def __init__(self, loss_fn, optimizing_fn, 
-                 mode='classifier', num_hidden_layers: int = 1, hidden_dim: int = None, 
+                 num_hidden_layers: int = 1, 
+                 hidden_dim: int = None, 
                  architecture_shape: str = 'block', 
                  input_dim: int = None,
                  example_input: Tensor = None, num_classes: int = None):
@@ -28,21 +29,17 @@ class LitFFNN(pl.LightningModule):
         accuracy = pl.metrics.Accuracy()
         self.train_accuracy = accuracy.clone()
         self.val_accuracy = accuracy.clone()
-
-
-        if mode in ['classifier', 'c']:
-            assert num_classes is not None
-            assert isinstance(num_classes, int)
-            self.mode = 'classifier'
+        self.test_accuracy = accuracy.clone()
 
         # Layer definitions
         self.layers = nn.ModuleList()
-        def RegularizedLinear(in_dim, out_dim) -> nn.Sequential:  
+        def RegularizedLinear(
+                in_dim, out_dim, dropout_pct=0.1) -> nn.Sequential:  
             return nn.Sequential(
                 nn.Flatten(start_dim=1),
                 nn.Linear(in_features=in_dim, out_features=out_dim),
                 nn.ReLU(),
-                nn.Dropout(p=0.15))
+                nn.Dropout(p=dropout_pct))
 
         def set_input_layer():
             input_layer = RegularizedLinear(
@@ -70,9 +67,8 @@ class LitFFNN(pl.LightningModule):
     def forward(self, x: Tensor) -> Tensor:
         for idx, layer in enumerate(self.layers):
             x = layer(x)
-        if self.mode == 'classifier':
-            logits = F.log_softmax(input=x, dim=1)
-            return logits
+        logits = F.log_softmax(input=x, dim=1)
+        return logits
 
     def configure_optimizers(self):
         optimizer = self.optimizing_fn(params=self.parameters())
@@ -107,12 +103,9 @@ class LitFFNN(pl.LightningModule):
     def hidden_dim(self) -> int:
         def init_hidden_dim():
             input_dim = self.input_dim 
-            if self.mode == 'classifier':
-                self._hidden_dim = round(
-                    np.sqrt(input_dim * self.num_classes))
-            elif self.mode == 'regressor':
-                # self._hidden_dim
-                raise NotImplementedError 
+            self._hidden_dim = round(
+                np.sqrt(input_dim * self.num_classes))
+
         try: 
             hidden_dim_exists: bool = self._hidden_dim is not None
             assert hidden_dim_exists
@@ -121,7 +114,6 @@ class LitFFNN(pl.LightningModule):
         except:
             init_hidden_dim()
             return self._hidden_dim
-
 
     # --------------- Training and validation steps --------------- #
     def training_step(self, batch, batch_idx):
@@ -155,4 +147,13 @@ class LitFFNN(pl.LightningModule):
         return loss
     
     def test_step(self, batch, batch_idx):
+        x, y = batch
+        logits = self(x)
+        loss = self.loss_function(logits, y)
+
+        self.test_accuracy(logits, y)
+        self.log('test_loss_step', loss, 
+                 on_step=True, on_epoch=False)
+        self.log('test_acc_step', self.test_accuracy, 
+                 on_step=True, on_epoch=True)
         return self.validation_step(batch, batch_idx)
