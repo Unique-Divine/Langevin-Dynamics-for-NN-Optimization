@@ -117,14 +117,14 @@ class LitFFNN(pl.LightningModule):
 
     # --------------- Training and validation steps --------------- #
     def training_step(self, batch, batch_idx):
+        # Perform step
         x, y = batch
-        if self.mode == 'classifier':
-            logits = self(x)
-            loss = self.loss_function(logits, y)
-        elif self.mode == 'regressor':
-            raise NotImplementedError
+        logits = self(x)
+        loss = self.loss_function(logits, y)
         
-        self.train_accuracy(logits, y)
+        # Log step
+        preds = torch.softmax(input=logits, dim=1)
+        self.train_accuracy(preds=preds, target=y)
         self.log('train_loss_step', loss, on_step=True, on_epoch=False,
                  prog_bar=False)
         self.log('train_acc_step', self.train_accuracy, on_step=True, 
@@ -132,14 +132,14 @@ class LitFFNN(pl.LightningModule):
         return loss
     
     def validation_step(self, batch, batch_idx):
+        # Perform step
         x, y = batch
-        if self.mode == 'classifier':
-            logits = self(x)
-            loss = self.loss_function(logits, y)
-        elif self.mode == 'regressor':
-            raise NotImplementedError
+        logits = self(x)
+        loss = self.loss_function(logits, y)
         
-        self.val_accuracy(logits, y)
+        # Log step
+        preds = torch.softmax(input=logits, dim=1)
+        self.val_accuracy(preds=preds, target=y)
         self.log('val_loss_step', loss, on_step=True, on_epoch=False, 
                  prog_bar=True)
         self.log('val_acc_step', self.val_accuracy, on_step=True, 
@@ -147,11 +147,14 @@ class LitFFNN(pl.LightningModule):
         return loss
     
     def test_step(self, batch, batch_idx):
+        # Perform step
         x, y = batch
         logits = self(x)
         loss = self.loss_function(logits, y)
 
-        self.test_accuracy(logits, y)
+        # Log step
+        preds = torch.softmax(input=logits, dim=1)
+        self.test_accuracy(preds=preds, target=y)
         self.log('test_loss_step', loss, 
                  on_step=True, on_epoch=False)
         self.log('test_acc_step', self.test_accuracy, 

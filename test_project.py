@@ -35,7 +35,6 @@ class TestMNISTOptimizers:
         network = lit_modules.LitFFNN(
             loss_fn=nn.CrossEntropyLoss(), 
             optimizing_fn=optimizing_fn, 
-            mode='classifier', 
             num_hidden_layers=1, 
             num_classes=10, 
             input_dim = channels * width * height
